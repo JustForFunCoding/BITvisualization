@@ -14,7 +14,7 @@ draw_settings = {
    'default_color':'black',
    'highlight_color':'red',
    'default_font': "12px Arial",
-   'big_font': "18px Arial"
+   'big_font': "15px Arial"
 }
 
 from enum import Enum
