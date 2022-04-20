@@ -1,0 +1,9 @@
+to load the web page run:
+
+cd www
+python3 -m http.server
+
+and open your browser on http://localhost:8000
+
+
+TODO:

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<link rel="stylesheet" href="../brython.css">
+<link rel="stylesheet" href="console.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-language_tools.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-solarized_light.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/mode-python.min.js"></script>
+
+<script type="text/javascript" src="gui.js"></script>
+<script type="text/javascript" src="../src/brython_builtins.js"></script>
+<script type="text/javascript" src="../src/version_info.js"></script>
+<script type="text/javascript" src="../src/python_tokenizer.js"></script>
+<script type="text/javascript" src="../src/py_ast.js"></script>
+<script type="text/javascript" src="../src/py2js.js"></script>
+<script type="text/javascript" src="../src/loaders.js"></script>
+<script type="text/javascript" src="../src/py_object.js"></script>
+<script type="text/javascript" src="../src/py_type.js"></script>
+<script type="text/javascript" src="../src/py_utils.js"></script>
+<script type="text/javascript" src="../src/py_sort.js"></script>
+<script type="text/javascript" src="../src/py_builtin_functions.js"></script>
+<script type="text/javascript" src="../src/py_exceptions.js"></script>
+<script type="text/javascript" src="../src/py_range_slice.js"></script>
+<script type="text/javascript" src="../src/py_bytes.js"></script>
+<script type="text/javascript" src="../src/py_set.js"></script>
+<script type="text/javascript" src="../src/js_objects.js"></script>
+<script type="text/javascript" src="../src/stdlib_paths.js"></script>
+<script type="text/javascript" src="../src/py_import.js"></script>
+<script type="text/javascript" src="../src/unicode_data.js"></script>
+<script type="text/javascript" src="../src/py_string.js"></script>
+<script type="text/javascript" src="../src/py_int.js"></script>
+<script type="text/javascript" src="../src/py_long_int.js"></script>
+<script type="text/javascript" src="../src/py_float.js"></script>
+<script type="text/javascript" src="../src/py_complex.js"></script>
+<script type="text/javascript" src="../src/py_dict.js"></script>
+<script type="text/javascript" src="../src/py_list.js"></script>
+<script type="text/javascript" src="../src/py_generator.js"></script>
+<script type="text/javascript" src="../src/py_dom.js"></script>
+<script type="text/javascript" src="../src/py_pattern_matching.js"></script>
+<script type="text/javascript" src="../src/builtin_modules.js"></script>
+<script type="text/javascript" src="../src/async.js"></script>
+
+<script type="text/javascript" src="../src/brython_stdlib.js"></script>
+<!-- script src="/assets/header.brython.js"></script -->
+
+<script type="text/python3" id="tests">
+import time
+import sys
+import tb as traceback
+
+from browser import document as doc, bind, console, window
+from browser import timer, aio
+from browser.local_storage import storage
+from print_support import animate, clear_queue
+
+import editor, brython_test_utils as utils
+
+tests = utils.test_groups()
+utils.populate_testmod_input(doc['files'], tests)
+
+failed = []
+t_start = None
+# animation speed
+g_speed = 6
+
+def setup_screen():
+    doc["console"].value = ''
+    select = doc["files"]
+    vals = select.options[select.selectedIndex].value.split(",")
+    clear_queue()
+    editor.adjust_canvas(vals[1])
+
+if storage is not None:
+    if "selected_idx" in storage:
+      idx = storage["selected_idx"]
+      if idx is not None:
+        select = doc["files"]
+        select.selectedIndex = int(idx)
+        stat_div = doc["status_top"]
+        setup_screen()
+
+async def run(reset=False):
+    if reset:
+        doc["console"].value = ""
+    src = editor.editor.getValue()
+    if storage is not None:
+       storage["py_src"] = src
+    window.STEPPING=0
+    setup_screen()
+    state, t0, t1, _ = utils.run(src)
+    dt = (t1 - t0) * 1000.0
+    # if state == 0:
+        # print(f'<completed in {dt:6.2f} ms (FAILED)>')
+    # else:
+        # print(f'<queued in {dt:6.2f} ms (OK)>')
+    sys.stdout.flush()
+
+    return state
+
+async def reload():
+	editor.reload()
+
+
+"""@bind("#test_all", "click")
+def test_all(ev):
+    global failed, t_start
+    t_start = time.time()
+    failed = []
+    aio.run(run_all())"""
+	
+@bind("#reset", "click")
+def reload_ev(ev):
+    window.STEPPING=0
+    setup_screen()
+
+@bind("#run", "click")
+def run_one(ev):
+    aio.run(run(reset=True))
+
+@bind('#size_up', 'click')
+def size_up(ev):
+    print("Up")
+    font_size = window.getComputedStyle(doc['console'])["font-size"]
+    doc['console'].style.fontSize = f'{int(font_size[:-2]) + 1}px'
+
+@bind('#size_down', 'click')
+def size_down(ev):
+    print("Down")
+    font_size = window.getComputedStyle(doc['console'])["font-size"]
+    new_size = max(1, int(font_size[:-2]))
+    doc['console'].style.fontSize = f'{new_size - 1}px'
+
+@bind('#speed_up', 'click')
+def speed_up(ev):
+    global g_speed
+    if g_speed < 10:
+	   g_speed += 1
+	   print("Speed: +")
+    window.ANIM_SPEED = (11 - g_speed) * 200
+    doc['current_speed'].textContent = str(g_speed)
+
+@bind('#speed_down', 'click')
+def speed_down(ev):
+    global g_speed
+    global SPEED
+    if g_speed > 1:
+	   g_speed -= 1
+	   print("Speed: -")
+    window.ANIM_SPEED = (11 - g_speed) * 200
+    doc['current_speed'].textContent = str(g_speed)
+
+@bind('#step', 'click')
+def step(ev):
+    if (window.STEPPING==1):
+      window.af = timer.request_animation_frame(animate)
+      #print("Step")
+      sys.stdout.flush()
+      doc["console"].scrollTop = doc["console"].scrollHeight 
+      return 1
+    elif (window.STEPPING==0):
+      src = editor.editor.getValue()
+      if storage is not None:
+         storage["py_src"] = src
+      window.STEPPING=1
+      setup_screen()
+      #print("Step")
+      state, t0, t1, _ = utils.run(src)
+      dt = (t1 - t0) * 1000.0
+      # print(f'<queued in {dt:6.2f} ms (OK)>')
+      sys.stdout.flush()
+      return state
+    else:
+      print("Stepping disabled, click RESET")
+
+# bindings to functions in module editor
+doc['show_js'].bind('click', editor.show_js)
+doc['show_console'].bind('click', editor.show_console)
+doc['files'].bind('change', editor.load_script)
+doc['files'].bind('click', editor.load_script)
+</script>
+
+</head>
+
+<body onload="init()">
+
+<div id="status_top" style="text-align:left; float:left">initial</div>
+<div style="text-align:center">
+    <b>BIT Demo</b> - Brython version: <span id="version"></span>
+</div>
+
+<div id="maindiv">
+	<canvas id="canvas1" class="canvas1"></canvas>
+</div>
+
+
+<table id="container">
+  <tr>
+    <td>
+      <div style="padding: 3px 3px 3px 3px;">
+        <div style="float:left">
+          Test:
+          <select name="filename" id="files"></select>
+          <!-- button id="test_all">Run all tests</button -->
+        </div>
+        <div style="float:left; padding-left:5%;">
+          Speed:
+          <button id="speed_down">&nbsp;-&nbsp;</button>
+          <div id="current_speed" style="display:initial">5</div>
+          <button id="speed_up">&nbsp;+&nbsp;</button>
+        </div>
+        <div style="float:left; padding-left:5%;">
+          <button id="step">Step</button>
+          <button id="reset">Reset</button>
+        </div>
+      </div>
+    </td>
+
+    <td>
+      <div style="padding: 3px 3px 3px 3px;">
+        <div style="float:left">
+          <button id="run">Run</button>
+        </div>
+        <div style="float:left; padding-left:5%;">
+          <button id="size_up">A&uarr;</button>
+          <button id="size_down">A&darr;</button>
+        </div>
+        <div style="float:right">
+          <button id="show_console">Show console</button>
+          <button id="show_js">Show Javascript</button>
+        </div>
+    </td>
+  </tr>
+  <tr>
+    <td id="left">
+      <div id="editor" style="width:100%;"></div>
+    </td>
+    <td id="right">
+        <div style="width:100%;height:100%;">
+        <textarea id="console" autocomplete="off"></textarea>
+        </div>
+    </td>
+  </tr>
+</table>
+
+<div id="legend">
+    Python code editor uses <a href="https://ace.c9.io/" target="_blank">Ace</a>.
+</div>
+
+</body>
+</html>
+
