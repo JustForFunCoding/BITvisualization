@@ -23,6 +23,7 @@ def test_groups():
     ret = []
     for tg in test_utils_tests:
         ret.append(tg[0])
+    return ret
 
 def populate_testmod_input(elem, selected=None):
     """Build a multiple selection control including test modules

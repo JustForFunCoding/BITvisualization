@@ -11,7 +11,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-solarized_light.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/mode-python.min.js"></script>
 
-<script type="text/javascript" src="gui.js"></script>
 <script type="text/javascript" src="../src/brython_builtins.js"></script>
 <script type="text/javascript" src="../src/version_info.js"></script>
 <script type="text/javascript" src="../src/python_tokenizer.js"></script>
@@ -43,9 +42,8 @@
 <script type="text/javascript" src="../src/py_pattern_matching.js"></script>
 <script type="text/javascript" src="../src/builtin_modules.js"></script>
 <script type="text/javascript" src="../src/async.js"></script>
-
 <script type="text/javascript" src="../src/brython_stdlib.js"></script>
-<!-- script src="/assets/header.brython.js"></script -->
+<script type="text/javascript" src="gui.js"></script>
 
 <script type="text/python3" id="tests">
 import time
@@ -80,8 +78,12 @@ if storage is not None:
       if idx is not None:
         select = doc["files"]
         select.selectedIndex = int(idx)
-        stat_div = doc["status_top"]
         setup_screen()
+    else:
+      select = doc["files"]
+      select.selectedIndex = 1
+      editor.load_script_low(select.value)
+      setup_screen()
 
 async def run(reset=False):
     if reset:

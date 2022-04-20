@@ -124,10 +124,8 @@ def adjust_canvas(canvas_count):
         canvas.attrs["width"] = canvas.offsetWidth
         canvas.attrs["height"] = canvas.offsetHeight
 
-# load a Python script and setup the screen for it
-def load_script(evt):
-    if not hasattr(evt.target, "type"):
-        vals = evt.target.value.split(",")
+def load_script_low(name_and_canvas):
+        vals = name_and_canvas.split(",")
         _name = vals[0]
         _canvas_count = vals[1]
         
@@ -139,15 +137,25 @@ def load_script(evt):
         stat_div.innerHTML = _name
 
         # remeber selected test from index page
-        select = document["files"]
-        if storage is not None and select is not None:
-            storage["selected_idx"]=str(select.selectedIndex)
         clear_queue()
         window.STEPPING=0
         
         current_script=_name
         _name = _name + '?foo=%s' % time.time()
         editor.setValue(open(_name).read())
+        
+        # remeber selected test from index page
+        select = document["files"]
+        if storage is not None and select is not None:
+            storage["selected_idx"]=str(select.selectedIndex)
+
+
+# load a Python script and setup the screen for it
+def load_script(evt):
+    #print(evt.detail, evt.target, evt.target.value, evt.target.type)
+    if not hasattr(evt.target, "type") or not hasattr(evt, "detail"):
+        load_script_low(evt.target.value)
+        
 
 # run a script, in global namespace if in_globals is True
 def run(*args):
