@@ -110,9 +110,10 @@ class BitRuRq2d(BitRuPq2d):
             d = self.biti.queryp(x, y, text_from_query, 'd', 'biti', spaces_from_query)
             res = a * x * y + b * x + c * y + d
         elif self.animate:
-            self.bitxy.draw.push_print(f'{spaces_from_query} invalid interval, querying nothing')
+            self.bitxy.draw.push_print(f'{spaces_from_query}out of range, querying nothing')
+            self.bitxy.draw.push_print(f'{spaces_from_query}{query_info} = 0')
             self.bitxy.draw.push(self.bitxy, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
-                                 f'{query_info} got invalid interval')
+                                 f'{query_info} out of range')
             self.bitxy.draw.push_print(f'{query_info} finished')
             self.bitxy.draw.push(self.bitxy, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
                                  f'{query_info} finished, result = 0')

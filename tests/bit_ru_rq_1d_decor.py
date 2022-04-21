@@ -123,9 +123,10 @@ class BitRuRq:
             cumul_freq = a * idx + b
         elif self.animate:
             self.bitc.draw.push_print(f'    out of range, querying nothing')
+            self.bitc.draw.push_print(f'    {query_info} = 0')
+            self.bitc.draw.push_print(f'{query_info} finished')
             self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
                                 f'{query_info} out of range')
-            self.bitc.draw.push_print(f'{query_info} finished')
             self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
                                 f'{query_info} finished, result = 0')
             return 0
