@@ -66,26 +66,26 @@ class BitRuPq:
             self.draw.push_print(f'{spaces_from_updater}{tree_name}.{updatep_info} starting')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree,
                            f'{text_from_updatep} starting')
-        if idx > self.size:
-            self.draw.push_print(f'{spaces_from_updater}{tree_name}.{updatep_info} finished')
-            self.draw.push_print(f'{spaces_from_updater}{tree_name} after {updatep_info}: {self.tree[1:]}')
-            self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{text_from_updatep} finished')
-            return
+        if 1 <= idx <= self.size:
+            while idx <= self.size:
+                # draw update_tree(idx, val)
+                if self.animate:
+                    self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, text_from_updatep, idx)
+                # do the update
+                self.tree[idx] += val
+                # probably not needed
+                #if self.animate:
+                #    self.draw.push(self, BitRuPq.draw_update_tree, idx)
+                idxold = idx
+                idx = idx + lsb(idx)
+                # draw link(idxold, idx)
+                if self.animate:
+                    self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, text_from_updatep, idxold, idxold)
+        else:
+            self.draw.push_print(f'    {spaces_from_updater}out of range, updating nothing')
+            self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree,
+                           f'{text_from_updatep} out of range', idx, idx)
 
-        while idx <= self.size:
-            # draw update_tree(idx, val)
-            if self.animate:
-                self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, text_from_updatep, idx)
-            # do the update 
-            self.tree[idx] += val
-            # probably not needed
-            #if self.animate:
-            #    self.draw.push(self, BitRuPq.draw_update_tree, idx)
-            idxold = idx
-            idx = idx + lsb(idx)
-            # draw link(idxold, idx)
-            if self.animate:
-                self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, text_from_updatep, idxold, idxold)
         if self.animate:
             self.draw.push_print(f'{spaces_from_updater}{tree_name}.{updatep_info} finished')
             self.draw.push_print(f'{spaces_from_updater}{tree_name} after {updatep_info}: {self.tree[1:]}')
@@ -140,9 +140,15 @@ class BitRuPq:
         if self.animate:
             self.draw.push_print(f'{spaces_from_udpate}{tree_name}.{updater_info} starting')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{updater_info}{text_from_update} starting')
-        spaces_from_updater = spaces_from_udpate + 4 * ' '
-        self.updatep(left, val, text_from_updater, tree_name, spaces_from_updater)
-        self.updatep(right + 1, -val, text_from_updater, tree_name, spaces_from_updater)
+
+        if 1 <= left <= right <= self.size:
+            spaces_from_updater = spaces_from_udpate + 4 * ' '
+            self.updatep(left, val, text_from_updater, tree_name, spaces_from_updater)
+            self.updatep(right + 1, -val, text_from_updater, tree_name, spaces_from_updater)
+        elif animate:
+            self.draw.push_print(f'    {spaces_from_udpate}invalid interval, updating nothing')
+            self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{updater_info}{text_from_update} got invalid interval')
+
         if self.animate:
             self.draw.push_print(f'{spaces_from_udpate}{tree_name}.{updater_info} finished')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{updater_info}{text_from_update} finished')
@@ -168,25 +174,33 @@ class BitRuPq:
         queryp_whole_info = queryp_info + text_from_query
         spaces_from_query = 4 * ' ' if text_from_query != '' else ''
         spaces = spaces_from_query + 4 * ' '
+
         if self.animate:
             self.draw.push_print(f'{spaces_from_query}{tree_name}.{queryp_info} starting')
             self.draw.push_print(f'{spaces}{result_name} = 0')
             self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree, f'{queryp_whole_info} starting, {result_name} := 0')
-        while idx > 0:
-            if self.animate:
-                self.draw.push_print(f'{spaces}{result_name} += {tree_name}[{idx}] (={self.tree[idx]})')
-                self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
-                               f'{result_name} := {result_name} + {self.tree[idx]} in {queryp_whole_info}', False, cumul_freq, idx)
-            cumul_freq += self.tree[idx]
-            # update cumul_freq
-            idxold = idx
-            # link(idxold, idx)
-            idx = idx - lsb(idx)
-            if self.animate:
-                self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
-                               f'{result_name} := {result_name} + {self.tree[idx]} in {queryp_whole_info}', False, cumul_freq, idxold, idx)
+
+        if 1 <= idx <= self.size:
+            while idx > 0:
+                if self.animate:
+                    self.draw.push_print(f'{spaces}{result_name} += {tree_name}[{idx}] (={self.tree[idx]})')
+                    self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                   f'{result_name} := {result_name} + {self.tree[idx]} in {queryp_whole_info}', False, cumul_freq, idx)
+                cumul_freq += self.tree[idx]
+                # update cumul_freq
+                idxold = idx
+                # link(idxold, idx)
+                idx = idx - lsb(idx)
+                if self.animate:
+                    self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                   f'{result_name} := {result_name} + {self.tree[idx]} in {queryp_whole_info}', False, cumul_freq, idxold, idx)
+        elif self.animate:
+            self.draw.push_print(f'{spaces}out of range, querying nothing')
+            self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                           f'{queryp_whole_info} out of range')
+
         if self.animate:
-            self.draw.push_print(f'{spaces}{result_name} = {cumul_freq}')
+            self.draw.push_print(f'{spaces}{tree_name}.{queryp_info} = {result_name} = {cumul_freq}')
             self.draw.push_print(f'{spaces_from_query}{tree_name}.{queryp_info} finished')
             self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
                            f'{queryp_whole_info} finished, {result_name} = {cumul_freq}', True, cumul_freq)

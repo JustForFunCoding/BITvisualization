@@ -11,8 +11,8 @@ draw_settings = {
    'box_size': 30,
    'default_line_width': 1,
    'highlight_line_width': 3,
-   'default_color':'black',
-   'highlight_color':'red',
+   'default_color': 'black',
+   'highlight_color': 'red',
    'default_font': "12px Arial",
    'big_font': "15px Arial"
 }

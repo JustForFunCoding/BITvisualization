@@ -56,11 +56,14 @@ class BitRuRq:
             self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} starting')
             self.biti.draw.push(self.biti, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} starting')
 
-        if left <= right <= self.size:
+        if 1 <= left <= right <= self.size:
             spaces = 4 * ' '
             self.bitc.updater(left, right, val, text_from_update, 'bitc', spaces)
             self.biti.updater(left, right, -val * (left - 1), text_from_update, 'biti', spaces)
             self.biti.updater(right + 1, self.size, val * (right - left + 1), text_from_update, 'biti', spaces)
+        elif self.animate:
+            self.bitc.draw.push_print(f'    invalid interval, updating nothing')
+            self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} got invalid interval')
 
         if self.animate:
             self.bitc.draw.push_print(f'{update_info} finished')
@@ -113,10 +116,22 @@ class BitRuRq:
             self.bitc.draw.push_print(f'{query_info} starting')
             self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
                                 f'{query_info} starting')
-        a = self.bitc.queryp(idx, text_from_query, 'a', 'bitc')
-        b = self.biti.queryp(idx, text_from_query, 'b', 'biti')
-        cumul_freq = a * idx + b
+
+        if 1 <= idx <= self.size:
+            a = self.bitc.queryp(idx, text_from_query, 'a', 'bitc')
+            b = self.biti.queryp(idx, text_from_query, 'b', 'biti')
+            cumul_freq = a * idx + b
+        elif self.animate:
+            self.bitc.draw.push_print(f'    out of range, querying nothing')
+            self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                f'{query_info} out of range')
+            self.bitc.draw.push_print(f'{query_info} finished')
+            self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                f'{query_info} finished, result = 0')
+            return 0
+
         if self.animate:
+            # if self.animate and not 1 <= idx <= self.size, we are returning 0, so we never get here
             self.bitc.draw.push_print(f'    {query_info} = a * {idx} + b = {a} * {idx} + {b} = {cumul_freq}')
             self.bitc.draw.push_print(f'{query_info} finished')
             self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,

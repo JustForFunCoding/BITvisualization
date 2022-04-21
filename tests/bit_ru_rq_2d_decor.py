@@ -71,7 +71,10 @@ class BitRuRq2d(BitRuPq2d):
                               -c * (x1 - 1) * (y2 - y1 + 1), text_from_update, 'biti', spaces)
             self.biti.updater(x2 + 1, y2 + 1, self.size, self.size,
                               c * (x2 - x1 + 1) * (y2 - y1 + 1), text_from_update, 'biti', spaces)
-
+        elif self.animate:
+            self.bitxy.draw.push_print(f'    invalid interval, updating nothing')
+            self.bitxy.draw.push(self.bitxy, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, c,
+                                 f'{update_info} got invalid interval')
 
         if self.animate:
             self.draw.push_print(f'{update_info} finished')
@@ -99,18 +102,24 @@ class BitRuRq2d(BitRuPq2d):
             self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
                            f'{query_info} starting')
 
-        if x < 1 or x > self.size or y < 1 or y > self.size:
-            self.draw.push_print(f'{query_info} finished, result = 0')
+        spaces_from_query = 4 * ' '
+        if 1 <= x <= self.size and 1 <= y <= self.size:
+            a = self.bitxy.queryp(x, y, text_from_query, 'a', 'bitxy', spaces_from_query)
+            b = self.bitx.queryp(x, y, text_from_query, 'b', 'bitx', spaces_from_query)
+            c = self.bity.queryp(x, y, text_from_query, 'c', 'bity', spaces_from_query)
+            d = self.biti.queryp(x, y, text_from_query, 'd', 'biti', spaces_from_query)
+            res = a * x * y + b * x + c * y + d
+        elif self.animate:
+            self.bitxy.draw.push_print(f'{spaces_from_query} invalid interval, querying nothing')
+            self.bitxy.draw.push(self.bitxy, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                                 f'{query_info} got invalid interval')
+            self.bitxy.draw.push_print(f'{query_info} finished')
+            self.bitxy.draw.push(self.bitxy, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                                 f'{query_info} finished, result = 0')
             return 0
 
-        spaces_from_query = 4 * ' '
-        a = self.bitxy.queryp(x, y, text_from_query, 'a', 'bitxy', spaces_from_query)
-        b = self.bitx.queryp(x, y, text_from_query, 'b', 'bitx', spaces_from_query)
-        c = self.bity.queryp(x, y, text_from_query, 'c', 'bity', spaces_from_query)
-        d = self.biti.queryp(x, y, text_from_query, 'd', 'biti', spaces_from_query)
-        res = a * x * y + b * x + c * y + d
-
         if self.animate:
+            # if self.animate and not (1 <= x <= self.size and 1 <= y <= self.size), we are returning 0, so we never get here
             self.draw.push_print(f'    {query_info} = a*{x}*{y} + b*{x} + c*{y} + d = {a}*{x}*{y} + {b}*{x} + {c}*{y} + {d} = {res}')
             self.draw.push_print(f'{query_info} finished')
             self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,

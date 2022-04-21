@@ -4,14 +4,12 @@ from bit_ru_pq_1d_decor import *
 Interface of 1D RU PQ BIT:
     - constructor (BitRuPq)
         - takes positive integer
-        - returns new instance of 1D RU PQ BIT of the given size
-            initialized with 0s
+        - returns new instance of 1D RU PQ BIT of the given size initialized with 0s
         - for example: bit = BitRuPq(10)
             creates 1D RU PQ BIT of size initialized with 0s
     - range update (updater)
         - takes three integers: left, right, val
-        - returns nothing, but 1D RU PQ BIT, on which is called updater
-            is modified appropriately
+        - returns nothing, but 1D RU PQ BIT, on which is called updater is modified appropriately
         - for example: bit.updater(4,7,3)
     - point query (queryp)
         - takes one positive integer: idx

@@ -58,6 +58,7 @@ class BitPuRq(object):
         """
         updatep_info = f'updatep({idx},{val})'
         tree_name = "bit"
+
         if self.animate:
             self.draw.push_print(f'{tree_name}.{updatep_info} starting')
             self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idx, idx, f'{updatep_info} starting')
@@ -77,6 +78,9 @@ class BitPuRq(object):
                 # draw link(idxold, idx)
                 if self.animate:
                     self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idxold, idxold, updatep_info)
+        elif self.animate:
+            self.draw.push_print(f'    out of range, updating nothing')
+            self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idx, idx, f'{updatep_info} out of range')
 
         if self.animate:
             self.draw.push_print(f'{tree_name}.{updatep_info} finished')
@@ -142,8 +146,12 @@ class BitPuRq(object):
                 if self.animate:
                     self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree,
                                    f'result := result + {self.tree[idx]} in {queryr_info}', False, cumul_freq, idxold, idx)
+        elif self.animate:
+            self.draw.push_print(f'    out of range, querying nothing')
+            self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree, f'{queryr_info} out of range')
+
         if self.animate:
-            self.draw.push_print('    queryr({}) = result = {}'.format(idx0, cumul_freq))
+            self.draw.push_print('    {}.queryr({}) = result = {}'.format(tree_name, idx0, cumul_freq))
             self.draw.push_print(f'{tree_name}.{queryr_info} finished')
             self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree,
                            f'{queryr_info} finished, result = {cumul_freq}', True, cumul_freq)

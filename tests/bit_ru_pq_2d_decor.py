@@ -56,12 +56,17 @@ class BitRuPq2d(Bit2d):
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
                            f'{updater_info}{text_from_update} starting')
 
+        spaces_from_updater = spaces_from_update + 4 * ' '
         if 1 <= row1 <= row2 <= self.size and 1 <= col1 <= col2 <= self.size:
-            spaces_from_updater = spaces_from_update + 4 * ' '
+            # valid range checked in updatep
             self.updatep(row1, col1, val, text_from_updater, tree_name, spaces_from_updater)
             self.updatep(row2 + 1, col1, -val, text_from_updater, tree_name, spaces_from_updater)
             self.updatep(row1, col2 + 1, -val, text_from_updater, tree_name, spaces_from_updater)
             self.updatep(row2 + 1, col2 + 1, val, text_from_updater, tree_name, spaces_from_updater)
+        elif self.animate:
+            self.draw.push_print(f'{spaces_from_updater}invalid interval, updating nothing')
+            self.draw.push(self, TreeType.UpdateTree, BitRuPq2d.draw_update_tree, None, None, val,
+                           f'{updater_info} got invalid interval')
 
         if self.animate:
             self.draw.push_print(f'{spaces_from_update}{tree_name}.{updater_info} finished')

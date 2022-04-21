@@ -125,11 +125,12 @@ class Bit2d(object):
         """
         updatep_info = f'updatep({row},{col},{val})'
         text_from_updatep = updatep_info + text_from_updater
+        spaces_from_updatep = spaces_from_updater + 4 * ' '
 
         if self.animate:
             self.draw.push_print(f'{spaces_from_updater}{tree_name}.{updatep_info} starting')
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
-                           f'{updatep_info}{text_from_updater} starting')
+                           f'{text_from_updatep} starting')
 
         if 1 <= row <= self.size and 1 <= col <= self.size:
             r = row
@@ -137,12 +138,16 @@ class Bit2d(object):
                 c = col
                 while c <= self.size:
                     if self.animate:
-                        self.draw.push_print(f'    {spaces_from_updater}{tree_name}[{r}][{c}] += {val}')
+                        self.draw.push_print(f'{spaces_from_updatep}{tree_name}[{r}][{c}] += {val}')
                         self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, r, c, val,
-                                       f'{updatep_info}{text_from_updater}')
+                                       f'{text_from_updatep}')
                     self.tree[r][c] += val
                     c += lsb(c)
                 r += lsb(r)
+        elif self.animate:
+            self.draw.push_print(f'{spaces_from_updatep} out of range, updating nothing')
+            self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
+                           f'{text_from_updatep} out of range')
 
         if self.animate and self.size > 0:
             self.draw.push_print(f'{spaces_from_updater}{tree_name}.{updatep_info} finished')
@@ -150,7 +155,7 @@ class Bit2d(object):
             self.show_table(spaces_from_updater + 4 * ' ')
             # shows last updated cell, plus removes highlight
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
-                           f'{updatep_info}{text_from_updater} finished')
+                           f'{text_from_updatep} finished')
 
     def query_virtual(self, row: int, col: int, query_info='', result_name='result',
                       tree_name='bit', spaces='') -> int:
@@ -164,20 +169,19 @@ class Bit2d(object):
             row:    given row index
             col:    given column index
             result_name:    name of the result for better visualization
-            tree_name:      name of the treee for better visualization
+            tree_name:      name of the tree for better visualization
             spaces:         indentation for nicer console prints
 
         Returns:    cumulative frequency on position given by row and col indices
         """
         cumul_freq = 0
-        if row < 1 or col < 1 or row > self.size or col > self.size:
-            return 0
-
         actual_info = query_info.split()[0]
         if self.animate:
             self.draw.push_print(f'{spaces}{tree_name}.{actual_info} starting')
             self.draw.push_print(f'    {spaces}{result_name} = 0')
-            self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, row, col, cumul_freq, f'{query_info} starting, {result_name} := 0')
+            rowarg = row if 1 <= row <= self.size else None
+            colarg = col if 1 <= col <= self.size else None
+            self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, rowarg, colarg, cumul_freq, f'{query_info} starting, {result_name} := 0')
 
         if 1 <= row <= self.size and 1 <= col <= self.size:
             r = row
@@ -192,9 +196,13 @@ class Bit2d(object):
                     cumul_freq += self.tree[r][c]
                     c -= lsb(c)
                 r -= lsb(r)
+        elif self.animate:
+            self.draw.push_print(f'    {spaces}out of range, querying nothing')
+            self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, cumul_freq,
+                           f'{query_info} out of range')
 
         if self.animate:
-            self.draw.push_print(f'    {spaces}{actual_info} = {result_name} = {cumul_freq}')
+            self.draw.push_print(f'    {spaces}{tree_name}.{actual_info} = {result_name} = {cumul_freq}')
             self.draw.push_print(f'{spaces}{tree_name}.{actual_info} finished')
             self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, cumul_freq,
                            f'{query_info} finished, {result_name} = {cumul_freq}')
