@@ -14,7 +14,7 @@ class BitPuRq2d(Bit2d):
         tree:       internal representation of the tree
         size:       size of the tree, which is NOT changed during the existence of the object
     """
-    def __init__(self, size: int = 0, do_animate = True, canvas = "1", name = "PuRq "):
+    def __init__(self, size: int = 0, do_animate = True, canvas = "1", name = "bit"):
         """
         Constructor initializes tree into 2d array of 0s of size (size + 1) * (size + 1).
         The reason is the same as was with 1d BITs.

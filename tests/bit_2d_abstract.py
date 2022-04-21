@@ -76,7 +76,8 @@ class Bit2d(object):
         self.starty = draw_settings["start_y"]
         self.box_size = draw_settings['box_size']
         if self.animate and size > 0:
-            #self.draw.push_print("{}tree: {}".format(name,self.tree[1:]))  # we don't want to show 0th index
+            self.draw.push_print(f'{name}:')
+            self.show_table(4 * ' ')
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree)
             
         if ('__BRYTHON__' in globals()):
@@ -210,7 +211,7 @@ class Bit2d(object):
 
     def show_table(self, spaces='    '):
         "Helper method for printing into console"
-        for row in self.tree:
+        for row in self.tree[1:]:
             self.draw.push_print(f'{spaces}{row[1:]}')
 
     def draw_query_tree(self, row = None, col = None, cumul_freq = 0, method_info = "") -> None:

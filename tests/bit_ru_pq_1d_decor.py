@@ -36,7 +36,7 @@ class BitRuPq:
         self.name = name
         self.draw = CanvasDraw("canvas"+str(canvas))
         if self.animate and size > 0:
-            tree_name = name[:-1] if len(name) > 1 else 'bit'
+            tree_name = name[:-1] if len(name) > 1 else 'bit'  # this is because RuRq gives us "bitc:"
             self.draw.push_print("{}: {}".format(tree_name, self.tree[1:]))  # we don't want to show 0th index
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree)
             

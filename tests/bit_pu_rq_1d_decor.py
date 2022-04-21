@@ -15,7 +15,7 @@ class BitPuRq(object):
         size:       size of the tree, which is NOT changed during the existence of the object
     """
 
-    def __init__(self, size: int = 0, do_animate = True, canvas = "1", name = ""):
+    def __init__(self, size: int = 0, do_animate = True, canvas = "1", name = "bit"):
         """
         Constructor initializes tree into array of 0s of the given size + 1.
         Why not only size? Because we have to index from 1, and we want to eliminate
@@ -36,7 +36,7 @@ class BitPuRq(object):
         self.name = name
         self.draw = CanvasDraw("canvas"+str(canvas))
         if self.animate and size > 0:
-            self.draw.push_print("bit: {}".format(self.tree[1:]))  # we don't want to show 0th index
+            self.draw.push_print("{}: {}".format(self.name, self.tree[1:]))  # we don't want to show 0th index
             self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree)
             
         if ('__BRYTHON__' in globals()):
