@@ -40,7 +40,23 @@ class BitPuRq2d(Bit2d):
 
         Returns:    cumulative frequency on position given by row and col indices
         """
-        return self.query_virtual(row, col, f'queryr({row},{col})')
+        tree_name = "bit"
+        query_info = f'{tree_name}.queryr({row},{col})'
+        spaces = 4 * ' '
+
+        if type(row) is not int or type(col) is not int:
+            if self.animate:
+                self.draw.push_print(f'{query_info} starting')
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
+                               None, None, 0, f'{query_info} starting')
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                               f'{query_info} got invalid format')
+                self.draw.push_print(f'{query_info} finished')
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
+                               None, None, 0, f'{query_info} finished')
+            return 0
+        return self.query_virtual(row, col, query_info)
 
     def queryp(self, row: int, col: int) -> int:
         """

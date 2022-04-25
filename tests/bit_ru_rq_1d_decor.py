@@ -51,18 +51,25 @@ class BitRuRq:
         #####
         update_info = f'update({left},{right},{val})'
         text_from_update = f' of {update_info}'
+        spaces = 4 * ' '
+
         if self.animate:
             self.bitc.draw.push_print(f'{update_info} starting')
             self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} starting')
             self.biti.draw.push(self.biti, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} starting')
 
-        if 1 <= left <= right <= self.size:
+        if type(left) is not int or type(right) is not int or type(val) is not int:
+            if self.animate:
+                self.bitc.draw.push_print(f'{spaces}invalid format')
+                self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree,
+                                    f'{update_info} got invalid format')
+        elif 1 <= left <= right <= self.size:
             spaces = 4 * ' '
             self.bitc.updater(left, right, val, text_from_update, 'bitc', spaces)
             self.biti.updater(left, right, -val * (left - 1), text_from_update, 'biti', spaces)
             self.biti.updater(right + 1, self.size, val * (right - left + 1), text_from_update, 'biti', spaces)
         elif self.animate:
-            self.bitc.draw.push_print(f'    invalid interval, updating nothing')
+            self.bitc.draw.push_print(f'{spaces}invalid interval, updating nothing')
             self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} got invalid interval')
 
         if self.animate:
@@ -111,19 +118,30 @@ class BitRuRq:
         # as is used in the thesis
         query_info = f'query({idx})'
         text_from_query = f' of {query_info}'
+        spaces = 4 * ' '
 
         if self.animate:
             self.bitc.draw.push_print(f'{query_info} starting')
             self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
                                 f'{query_info} starting')
 
-        if 1 <= idx <= self.size:
+        if type(idx) is not int:
+            if self.animate:
+                self.bitc.draw.push_print(f'{spaces}invalid format')
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                    f'{query_info} got invalid format')
+                self.bitc.draw.push_print(f'{spaces}{query_info} = 0')
+                self.bitc.draw.push_print(f'{query_info} finished')
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                    f'{query_info} finished, result = 0')
+                return 0
+        elif 1 <= idx <= self.size:
             a = self.bitc.queryp(idx, text_from_query, 'a', 'bitc')
             b = self.biti.queryp(idx, text_from_query, 'b', 'biti')
             cumul_freq = a * idx + b
         elif self.animate:
-            self.bitc.draw.push_print(f'    out of range, querying nothing')
-            self.bitc.draw.push_print(f'    {query_info} = 0')
+            self.bitc.draw.push_print(f'{spaces}out of range, querying nothing')
+            self.bitc.draw.push_print(f'{spaces}{query_info} = 0')
             self.bitc.draw.push_print(f'{query_info} finished')
             self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
                                 f'{query_info} out of range')

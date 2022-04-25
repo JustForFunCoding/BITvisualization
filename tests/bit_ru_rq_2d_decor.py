@@ -52,12 +52,19 @@ class BitRuRq2d(BitRuPq2d):
         """
         update_info = f'update({x1},{y1},{x2},{y2},{c})'
         text_from_update = f' of {update_info}'
+        spaces = 4 * ' '
+
         if self.animate:
             self.draw.push_print(f'{update_info} starting')
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, c,
                            f'{update_info} starting')
 
-        if 1 <= x1 <= x2 <= self.size and 1 <= y1 <= y2 <= self.size:
+        if type(x1) is not int or type(x2) is not int or type(y1) is not int or type(y2) is not int or type(c) is not int:
+            if self.animate:
+                self.bitxy.draw.push_print(f'{spaces}invalid format')
+                self.bitxy.draw.push(self.bitxy, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, c,
+                                     f'{update_info} got invalid format')
+        elif 1 <= x1 <= x2 <= self.size and 1 <= y1 <= y2 <= self.size:
             spaces = 4 * ' '
             self.bitxy.updater(x1, y1, x2, y2, c, text_from_update, 'bitxy', spaces)
             self.bitx.updater(x1, y1, x2, y2, -c * (y1 - 1), text_from_update, 'bitx', spaces)
@@ -72,7 +79,7 @@ class BitRuRq2d(BitRuPq2d):
             self.biti.updater(x2 + 1, y2 + 1, self.size, self.size,
                               c * (x2 - x1 + 1) * (y2 - y1 + 1), text_from_update, 'biti', spaces)
         elif self.animate:
-            self.bitxy.draw.push_print(f'    invalid interval, updating nothing')
+            self.bitxy.draw.push_print(f'{spaces}invalid interval, updating nothing')
             self.bitxy.draw.push(self.bitxy, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, c,
                                  f'{update_info} got invalid interval')
 
@@ -96,14 +103,23 @@ class BitRuRq2d(BitRuPq2d):
         """
         query_info = f'query({x},{y})'
         text_from_query = f' of {query_info}'
+        spaces_from_query = 4 * ' '
 
         if self.animate:
             self.draw.push_print(f'{query_info} starting')
             self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
                            f'{query_info} starting')
 
-        spaces_from_query = 4 * ' '
-        if 1 <= x <= self.size and 1 <= y <= self.size:
+        if type(x) is not int or type(y) is not int:
+            if self.animate:
+                self.bitxy.draw.push_print(f'{spaces_from_query}invalid format')
+                self.bitxy.draw.push(self.bitxy, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                                     f'{query_info} got invalid format')
+                self.bitxy.draw.push_print(f'{spaces_from_query}{query_info} = 0')
+                self.bitxy.draw.push_print(f'{query_info} finished')
+                self.bitxy.draw.push(self.bitxy, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                                     f'{query_info} finished, result = 0')
+        elif 1 <= x <= self.size and 1 <= y <= self.size:
             a = self.bitxy.queryp(x, y, text_from_query, 'a', 'bitxy', spaces_from_query)
             b = self.bitx.queryp(x, y, text_from_query, 'b', 'bitx', spaces_from_query)
             c = self.bity.queryp(x, y, text_from_query, 'c', 'bity', spaces_from_query)
