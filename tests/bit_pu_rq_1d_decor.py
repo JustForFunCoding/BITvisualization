@@ -58,15 +58,21 @@ class BitPuRq(object):
         """
         updatep_info = f'updatep({idx},{val})'
         tree_name = "bit"
+        spaces = 4 * ' '
 
         if self.animate:
             self.draw.push_print(f'{tree_name}.{updatep_info} starting')
             self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idx, idx, f'{updatep_info} starting')
 
-        if 1 <= idx <= self.size:
+        if type(idx) is not int or type(val) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idx, idx,
+                               f'{updatep_info} got invalid format')
+        elif 1 <= idx <= self.size:
             while idx <= self.size:
                 if self.animate:
-                    self.draw.push_print(f'    {tree_name}[{idx}] += {val}')
+                    self.draw.push_print(f'{spaces}{tree_name}[{idx}] += {val}')
                     self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idx, idx, updatep_info)
                 # do the update
                 self.tree[idx] += val
@@ -79,7 +85,7 @@ class BitPuRq(object):
                 if self.animate:
                     self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idxold, idxold, updatep_info)
         elif self.animate:
-            self.draw.push_print(f'    out of range, updating nothing')
+            self.draw.push_print(f'{spaces}out of range, updating nothing')
             self.draw.push(self, TreeType.UpdateTree, BitPuRq.draw_update_tree, idx, idx, f'{updatep_info} out of range')
 
         if self.animate:
@@ -127,15 +133,22 @@ class BitPuRq(object):
         idx0 = idx
         queryr_info = f'queryr({idx})'
         tree_name = "bit"
+        spaces = 4 * ' '
+
         if self.animate:
             self.draw.push_print(f'{tree_name}.{queryr_info} starting')
-            self.draw.push_print('    result = 0')
+            self.draw.push_print(f'{spaces}result = 0')
             self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree, f'{queryr_info} starting, result := 0', 0)
 
-        if 1 <= idx <= self.size:
+        if type(idx) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree,
+                               f'{queryr_info} got invalid format')
+        elif 1 <= idx <= self.size:
             while idx > 0:
                 if self.animate:
-                    self.draw.push_print(f'    result += {tree_name}[{idx}] (={self.tree[idx]})')
+                    self.draw.push_print(f'{spaces}result += {tree_name}[{idx}] (={self.tree[idx]})')
                     self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree,
                                    f'result := result + {self.tree[idx]} in {queryr_info}', False, cumul_freq, idx)
                 cumul_freq += self.tree[idx]
@@ -147,11 +160,11 @@ class BitPuRq(object):
                     self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree,
                                    f'result := result + {self.tree[idx]} in {queryr_info}', False, cumul_freq, idxold, idx)
         elif self.animate:
-            self.draw.push_print(f'    out of range, querying nothing')
+            self.draw.push_print(f'{spaces}out of range, querying nothing')
             self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree, f'{queryr_info} out of range')
 
         if self.animate:
-            self.draw.push_print('    {}.queryr({}) = result = {}'.format(tree_name, idx0, cumul_freq))
+            self.draw.push_print('{}{}.queryr({}) = result = {}'.format(spaces, tree_name, idx0, cumul_freq))
             self.draw.push_print(f'{tree_name}.{queryr_info} finished')
             self.draw.push(self, TreeType.QueryTree, BitPuRq.draw_query_tree,
                            f'{queryr_info} finished, result = {cumul_freq}', True, cumul_freq)

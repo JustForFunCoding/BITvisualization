@@ -133,7 +133,12 @@ class Bit2d(object):
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
                            f'{text_from_updatep} starting')
 
-        if 1 <= row <= self.size and 1 <= col <= self.size:
+        if type(row) is not int or type(col) is not int or type(val) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces_from_updatep}invalid format')
+                self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
+                               f'{text_from_updatep} got invalid format')
+        elif 1 <= row <= self.size and 1 <= col <= self.size:
             r = row
             while r <= self.size:
                 c = col

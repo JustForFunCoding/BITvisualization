@@ -2,6 +2,7 @@
 # Range update
 # Point query
 
+from inspect import signature
 from print_support import *
 from typing import Tuple
 from copy import copy
@@ -27,6 +28,10 @@ class BitRuPq:
         Args:
             size:       given size of the tree
         """
+        self.draw = CanvasDraw("canvas"+str(canvas))
+        if type(size) is not int:
+            self.draw.push_print(f'size has to be int')
+            raise ValueError("Size has to be of type int")
         self.tree = [0] * (size + 1)
         self.size = size
         self.animate = do_animate
@@ -34,7 +39,6 @@ class BitRuPq:
         self.starty = draw_settings["start_y"]
         self.circle_diameter = draw_settings["circle_diameter"]
         self.name = name
-        self.draw = CanvasDraw("canvas"+str(canvas))
         if self.animate and size > 0:
             tree_name = name[:-1] if len(name) > 1 else 'bit'  # this is because RuRq gives us "bitc:"
             self.draw.push_print("{}: {}".format(tree_name, self.tree[1:]))  # we don't want to show 0th index
@@ -62,11 +66,19 @@ class BitRuPq:
         """
         updatep_info = f'updatep({idx},{val})'
         text_from_updatep = updatep_info + text_from_updater
+        spaces = spaces_from_updater + 4 * ' '
+
         if self.animate:
             self.draw.push_print(f'{spaces_from_updater}{tree_name}.{updatep_info} starting')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree,
                            f'{text_from_updatep} starting')
-        if 1 <= idx <= self.size:
+
+        if type(idx) is not int or type(val) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree,
+                               f'{text_from_updatep} got invalid format')
+        elif 1 <= idx <= self.size:
             while idx <= self.size:
                 # draw update_tree(idx, val)
                 if self.animate:
@@ -81,8 +93,8 @@ class BitRuPq:
                 # draw link(idxold, idx)
                 if self.animate:
                     self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, text_from_updatep, idxold, idxold)
-        else:
-            self.draw.push_print(f'    {spaces_from_updater}out of range, updating nothing')
+        elif self.animate:
+            self.draw.push_print(f'{spaces}out of range, updating nothing')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree,
                            f'{text_from_updatep} out of range', idx, idx)
 
@@ -136,17 +148,23 @@ class BitRuPq:
         """
         updater_info = f'updater({left},{right},{val})'
         text_from_updater = ' of ' + updater_info + text_from_update
+        spaces = spaces_from_udpate + 4 * ' '
 
         if self.animate:
             self.draw.push_print(f'{spaces_from_udpate}{tree_name}.{updater_info} starting')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{updater_info}{text_from_update} starting')
 
-        if 1 <= left <= right <= self.size:
+        if type(left) is not int or type(right) is not int or type(val) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree,
+                               f'{updater_info}{text_from_update} got invalid format')
+        elif 1 <= left <= right <= self.size:
             spaces_from_updater = spaces_from_udpate + 4 * ' '
             self.updatep(left, val, text_from_updater, tree_name, spaces_from_updater)
             self.updatep(right + 1, -val, text_from_updater, tree_name, spaces_from_updater)
         elif animate:
-            self.draw.push_print(f'    {spaces_from_udpate}invalid interval, updating nothing')
+            self.draw.push_print(f'{spaces}invalid interval, updating nothing')
             self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{updater_info}{text_from_update} got invalid interval')
 
         if self.animate:
@@ -180,7 +198,12 @@ class BitRuPq:
             self.draw.push_print(f'{spaces}{result_name} = 0')
             self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree, f'{queryp_whole_info} starting, {result_name} := 0')
 
-        if 1 <= idx <= self.size:
+        if type(idx) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                               f'{queryp_whole_info} got invalid format')
+        elif 1 <= idx <= self.size:
             while idx > 0:
                 if self.animate:
                     self.draw.push_print(f'{spaces}{result_name} += {tree_name}[{idx}] (={self.tree[idx]})')

@@ -50,14 +50,20 @@ class BitRuPq2d(Bit2d):
         """
         updater_info = f'updater({row1},{col1},{row2},{col2},{val})'
         text_from_updater = ' of ' + updater_info + text_from_update
+        spaces_from_updater = spaces_from_update + 4 * ' '
 
         if self.animate:
             self.draw.push_print(f'{spaces_from_update}{tree_name}.{updater_info} starting')
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
                            f'{updater_info}{text_from_update} starting')
 
-        spaces_from_updater = spaces_from_update + 4 * ' '
-        if 1 <= row1 <= row2 <= self.size and 1 <= col1 <= col2 <= self.size:
+        if type(row1) is not int or type(row2) is not int or type(col1) is not int \
+                or type(col2) is not int or type(val) is not int:
+            if self.animate:
+                self.draw.push_print(f'{spaces_from_updater}invalid format')
+                self.draw.push(self, TreeType.UpdateTree, BitRuPq2d.draw_update_tree, None, None, val,
+                               f'{updater_info} got invalid format')
+        elif 1 <= row1 <= row2 <= self.size and 1 <= col1 <= col2 <= self.size:
             # valid range checked in updatep
             self.updatep(row1, col1, val, text_from_updater, tree_name, spaces_from_updater)
             self.updatep(row2 + 1, col1, -val, text_from_updater, tree_name, spaces_from_updater)
@@ -90,9 +96,22 @@ class BitRuPq2d(Bit2d):
 
         Returns:    cumulative frequency on position given by row and col indices
         """
-        # valid range is checked in query_virtual
-        return self.query_virtual(row, col, f'queryp({row},{col}){text_from_query}', result_name,
-                                  tree_name, spaces_from_query)
+        query_info = f'{tree_name}.queryp({row},{col}){text_from_query}'
+        spaces = spaces_from_query + 4 * ' '
+
+        if type(row) is not int or type(col) is not int:
+            if self.animate:
+                self.draw.push_print(f'{query_info} starting')
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
+                               None, None, 0, f'{query_info} starting')
+                self.draw.push_print(f'{spaces}invalid format')
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                               f'{query_info} got invalid format')
+                self.draw.push_print(f'{query_info} finished')
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
+                               None, None, 0, f'{query_info} finished')
+            return 0
+        return self.query_virtual(row, col, query_info, result_name, tree_name, spaces_from_query)
 
 
 # Note: We suppose any argument given into any method / function lsb is the whole number.
