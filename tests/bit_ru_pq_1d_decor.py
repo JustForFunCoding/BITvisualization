@@ -2,7 +2,6 @@
 # Range update
 # Point query
 
-from inspect import signature
 from print_support import *
 from typing import Tuple
 from copy import copy
@@ -234,9 +233,6 @@ class BitRuPq:
         """
         Helper method for user to see the content of the current tree values.
 
-        Args:
-            tree_name:  name of the tree
-
         Returns:        nothing is returned, but the tree name with its content is printed into console
         """
         self.draw.push_print(self.name + " " + str(self.tree[1:]))
@@ -260,17 +256,7 @@ class BitRuPq:
             # always 0
             return 0
 
-        predecessor, parent = idx - 1, idx - lsb(idx)
-        res = self.tree[idx]
-        if self.animate:
-            self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree, res, idx)
-        while predecessor != parent:
-            res -= self.tree[predecessor]
-            if self.animate:
-                self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree, res, predecessor)
-            predecessor -= lsb(predecessor)
-            if self.animate:
-                self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree, res, predecessor)
+        res = self.queryp(idx)
         if self.animate:
             self.draw.push_print('{}get_single_freq({})={}'.format(self.name, idx,res))
             self.draw.push(self, TreeType.QueryTree, BitRuPq.draw_query_tree, res)
@@ -288,7 +274,7 @@ class BitRuPq:
 
         Returns:    list of virtual frequencies, also printed to console
         """
-        item_freqs = [self.get_single_freq(i) for i in range(1, self.size + 1)]
+        item_freqs = [self.queryp(i) for i in range(1, self.size + 1)]
         if self.animate:
             self.draw.push_print("{}Item frequencies: {}".format(self.name, item_freqs))
         return item_freqs
@@ -422,8 +408,8 @@ def demo():
     print("Starting demo")  
 
     t = BitRuPq().init([1,2,3])
-    t.updater(2,2)
-    t.queryr(3)
+    t.updater(2,2,3)
+    t.queryp(3)
     t.get_single_freqs()
     print("Demo finished")  
 
