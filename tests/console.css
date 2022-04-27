@@ -54,7 +54,7 @@ textarea {
 }
 
 .canvas1 {
-  background-color: #D0D0D0;
+  background-color: #FFFFFF;
   height: 500px;
   width:99%; 
   margin-left: 0.5%; 
@@ -63,7 +63,7 @@ textarea {
 }
 
 .canvas2 {
-  background-color: #D0D0D0;
+  background-color: #FFFFFF;
   height: 500px;
   overflow:hidden;
   width:49.5%; 
@@ -73,7 +73,7 @@ textarea {
 }
 
 .canvas4 {
-  background-color: #D0D0D0;
+  background-color: #FFFFFF;
   height: 350px;
   width: 49.5%;
   margin-left: 0.5%; 
