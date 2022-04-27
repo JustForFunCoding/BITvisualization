@@ -96,22 +96,22 @@ class BitRuPq2d(Bit2d):
 
         Returns:    cumulative frequency on position given by row and col indices
         """
-        query_info = f'{tree_name}.queryp({row},{col}){text_from_query}'
+        query_info = f'queryp({row},{col}){text_from_query}'
         spaces = spaces_from_query + 4 * ' '
 
         if type(row) is not int or type(col) is not int:
             if self.animate:
-                self.draw.push_print(f'{query_info} starting')
+                self.draw.push_print(f'{tree_name}.{query_info} starting')
                 self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
                                None, None, 0, f'{query_info} starting')
                 self.draw.push_print(f'{spaces}invalid format')
                 self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
                                f'{query_info} got invalid format')
-                self.draw.push_print(f'{query_info} finished')
+                self.draw.push_print(f'{tree_name}.{query_info} finished')
                 self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
                                None, None, 0, f'{query_info} finished')
             return 0
-        return self.query_virtual(row, col, query_info, result_name, tree_name, spaces_from_query)
+        return self.query_virtual(row, col, query_info, tree_name, result_name, spaces_from_query)
 
 
 # Note: We suppose any argument given into any method / function lsb is the whole number.

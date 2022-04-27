@@ -163,8 +163,8 @@ class Bit2d(object):
             self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
                            f'{text_from_updatep} finished')
 
-    def query_virtual(self, row: int, col: int, query_info='', result_name='result',
-                      tree_name='bit', spaces='') -> int:
+    def query_virtual(self, row: int, col: int, query_info='', tree_name='bit',
+                      result_name='result', spaces='') -> int:
         """
         Operation of range/point query as described in the thesis, depends on caller.
 
@@ -197,8 +197,12 @@ class Bit2d(object):
                     # careful this should not be enabled in callbacks fetched from queue
                     if self.animate:
                         self.draw.push_print(f'    {spaces}{result_name} += {tree_name}[{r}][{c}] (={self.tree[r][c]})')
-                        self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, r, c, cumul_freq,
-                                       f'{result_name} := {result_name} + {self.tree[r][c]} in {query_info}')
+                        if self.tree[r][c] >= 0:
+                            self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, r, c, cumul_freq,
+                                           f'{result_name} := {result_name} + {self.tree[r][c]} in {query_info}')
+                        else:
+                            self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, r, c, cumul_freq,
+                                           f'{result_name} := {result_name} - {-self.tree[r][c]} in {query_info}')
                     cumul_freq += self.tree[r][c]
                     c -= lsb(c)
                 r -= lsb(r)

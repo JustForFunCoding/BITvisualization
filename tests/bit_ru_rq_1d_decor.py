@@ -151,10 +151,17 @@ class BitRuRq:
 
         if self.animate:
             # if self.animate and not 1 <= idx <= self.size, we are returning 0, so we never get here
-            self.bitc.draw.push_print(f'    {query_info} = a * {idx} + b = {a} * {idx} + {b} = {cumul_freq}')
+            if b >= 0:
+                self.bitc.draw.push_print(f'{spaces}{query_info} = a * {idx} + b = {a} * {idx} + {b} = {cumul_freq}')
+            else:
+                self.bitc.draw.push_print(f'{spaces}{query_info} = a * {idx} + b = {a} * {idx} + ({b}) = {cumul_freq}')
             self.bitc.draw.push_print(f'{query_info} finished')
-            self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
-                                f'{query_info} finished, result = {a}*{idx} + {b} = {cumul_freq}')
+            if b >= 0:
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                    f'{query_info} finished, result = {a}*{idx} + {b} = {cumul_freq}')
+            else:
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                                    f'{query_info} finished, result = {a}*{idx} + ({b}) = {cumul_freq}')
         return cumul_freq
 
 
