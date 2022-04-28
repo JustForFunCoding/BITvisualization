@@ -139,8 +139,12 @@ class BitRuRq2d(BitRuPq2d):
             # if self.animate and not (1 <= x <= self.size and 1 <= y <= self.size), we are returning 0, so we never get here
             self.draw.push_print(f'    {query_info} = a*{x}*{y} + b*{x} + c*{y} + d = {a}*{x}*{y} + {b}*{x} + {c}*{y} + {d} = {res}')
             self.draw.push_print(f'{query_info} finished')
-            self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
-                           f'{query_info} finished, result = {a}*{x}*{y} + {b}*{x} + {c}*{y} + {d} = {res}')
+            if d >= 0:
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                               f'{query_info} finished, result = ({a}*{x}*{y}) + ({b}*{x}) + ({c}*{y}) + {d} = {res}')
+            else:
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                               f'{query_info} finished, result = ({a}*{x}*{y}) + ({b}*{x}) + ({c}*{y}) - {-d} = {res}')
         return res
 
 
