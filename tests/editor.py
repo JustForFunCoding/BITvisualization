@@ -107,6 +107,7 @@ document['version'].text = version
 output = ''
 
 def show_console(ev):
+    global output
     document["console"].value = output
     document["console"].cols = 60
     
@@ -180,7 +181,9 @@ def run(*args):
     return state
 
 def show_js(ev):
+    global output
     src = editor.getValue()
+    output = document["console"].value
     document["console"].value = javascript.py2js(src, '__main__')
 
 def share_code(ev):
