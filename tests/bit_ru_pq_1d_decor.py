@@ -81,6 +81,7 @@ class BitRuPq:
             while idx <= self.size:
                 # draw update_tree(idx, val)
                 if self.animate:
+                    self.draw.push_print(f'{spaces}{tree_name}[{idx}] += {val}')
                     self.draw.push(self, TreeType.UpdateTree, BitRuPq.draw_update_tree, text_from_updatep, idx)
                 # do the update
                 self.tree[idx] += val
