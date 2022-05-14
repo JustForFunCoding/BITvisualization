@@ -65,8 +65,7 @@ textarea {
 .canvas2 {
   background-color: #FFFFFF;
   height: 500px;
-  overflow:hidden;
-  width:49.5%; 
+  width:49.5%;
   margin-left: 0.5%; 
   overflow:hidden;
   position: relative;  

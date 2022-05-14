@@ -5,17 +5,21 @@
 from bit_2d_abstract import *
 from print_support import *
 
+
 class BitRuPq2d(Bit2d):
     """
-    Class representing 2D Binary indexed tree for set of operations Range update and Point query.
+    Class representing 2D Binary indexed tree for set of operations
+        Range update and Point query.
 
     Attributes:
         tree:       internal representation of the tree
-        size:       size of the tree, which is NOT changed during the existence of the object
+        size:       size of the tree, which is NOT changed
+                        during the existence of the object
     """
-    def __init__(self, size: int = 0, do_animate = True, canvas = "1", name = "bit"):
+    def __init__(self, size: int = 0, do_animate=True, canvas="1", name="bit"):
         """
-        Constructor initializes tree into 2d array of 0s of size (size + 1) * (size + 1).
+        Constructor initializes tree into 2d array of 0s of
+            size (size + 1) * (size + 1).
         The reason is the same as was with 1d BITs.
 
         Defined when arguments hold the following conditions:
@@ -26,9 +30,9 @@ class BitRuPq2d(Bit2d):
         """
         super().__init__(size, do_animate, canvas, name)
 
-
     def updater(self, row1: int, col1: int, row2: int, col2: int, val: int,
-                text_from_update='', tree_name='bit', spaces_from_update='') -> None:
+                text_from_update='', tree_name='bit',
+                spaces_from_update='') -> None:
         """
         Operation of range update as described in the thesis.
 
@@ -42,8 +46,11 @@ class BitRuPq2d(Bit2d):
             col1:               starting column index
             row2:               ending row index
             col2:               ending column index
-            val:                value which is added to every element inside interval given by row and column indices
+            val:                value which is added to every element inside
+                                    interval given by row and column indices
             text_from_update:   helper text for better visualization
+            spaces_from_update: spaces from update operation for nicer prints
+            tree_name:          tree name for nicer prints
 
         Returns:    nothing is returned, but the tree is changed appropriately
 
@@ -53,34 +60,46 @@ class BitRuPq2d(Bit2d):
         spaces_from_updater = spaces_from_update + 4 * ' '
 
         if self.animate:
-            self.draw.push_print(f'{spaces_from_update}{tree_name}.{updater_info} starting')
-            self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
-                           f'{updater_info}{text_from_update} starting')
+            self.draw.push_print(f'{spaces_from_update}{tree_name}.'
+                                 f'{updater_info} starting')
+            self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree,
+                           None, None, val, f'{updater_info}{text_from_update} '
+                                            f'starting')
 
-        if type(row1) is not int or type(row2) is not int or type(col1) is not int \
-                or type(col2) is not int or type(val) is not int:
+        if type(row1) is not int or type(row2) is not int or \
+                type(col1) is not int or type(col2) is not int or \
+                type(val) is not int:
             if self.animate:
                 self.draw.push_print(f'{spaces_from_updater}invalid format')
-                self.draw.push(self, TreeType.UpdateTree, BitRuPq2d.draw_update_tree, None, None, val,
+                self.draw.push(self, TreeType.UpdateTree,
+                               BitRuPq2d.draw_update_tree, None, None, val,
                                f'{updater_info} got invalid format')
         elif 1 <= row1 <= row2 <= self.size and 1 <= col1 <= col2 <= self.size:
-            # valid range checked in updatep
-            self.updatep(row1, col1, val, text_from_updater, tree_name, spaces_from_updater)
-            self.updatep(row2 + 1, col1, -val, text_from_updater, tree_name, spaces_from_updater)
-            self.updatep(row1, col2 + 1, -val, text_from_updater, tree_name, spaces_from_updater)
-            self.updatep(row2 + 1, col2 + 1, val, text_from_updater, tree_name, spaces_from_updater)
+            self.updatep(row1, col1, val, text_from_updater,
+                         tree_name, spaces_from_updater)
+            self.updatep(row2 + 1, col1, -val, text_from_updater,
+                         tree_name, spaces_from_updater)
+            self.updatep(row1, col2 + 1, -val, text_from_updater,
+                         tree_name, spaces_from_updater)
+            self.updatep(row2 + 1, col2 + 1, val, text_from_updater,
+                         tree_name, spaces_from_updater)
         elif self.animate:
-            self.draw.push_print(f'{spaces_from_updater}invalid interval, updating nothing')
-            self.draw.push(self, TreeType.UpdateTree, BitRuPq2d.draw_update_tree, None, None, val,
+            self.draw.push_print(f'{spaces_from_updater}invalid interval, '
+                                 f'updating nothing')
+            self.draw.push(self, TreeType.UpdateTree,
+                           BitRuPq2d.draw_update_tree, None, None, val,
                            f'{updater_info} got invalid interval')
 
         if self.animate:
-            self.draw.push_print(f'{spaces_from_update}{tree_name}.{updater_info} finished')
-            self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree, None, None, val,
-                           f'{updater_info}{text_from_update} finished')
+            self.draw.push_print(f'{spaces_from_update}{tree_name}.'
+                                 f'{updater_info} finished')
+            self.draw.push(self, TreeType.UpdateTree, Bit2d.draw_update_tree,
+                           None, None, val, f'{updater_info}{text_from_update} '
+                                            f'finished')
 
-    def queryp(self, row: int, col: int, text_from_query='', result_name='result',
-               tree_name='bit', spaces_from_query='') -> int:
+    def queryp(self, row: int, col: int, text_from_query='',
+               result_name='result', tree_name='bit',
+               spaces_from_query='') -> int:
         """
         Operation of range query as described in the thesis.
 
@@ -91,10 +110,12 @@ class BitRuPq2d(Bit2d):
             row:                given row index
             col:                given column index
             text_from_query:    helper text for better visualization
+            result_name:        name of the result for nicer visualization
             tree_name:          helper text for better visualization
             spaces_from_query:  for better indentation in console prints
 
-        Returns:    cumulative frequency on position given by row and col indices
+        Returns:    cumulative frequency on position given
+                        by row and col indices
         """
         query_info = f'queryp({row},{col}){text_from_query}'
         spaces = spaces_from_query + 4 * ' '
@@ -105,20 +126,18 @@ class BitRuPq2d(Bit2d):
                 self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
                                None, None, 0, f'{query_info} starting')
                 self.draw.push_print(f'{spaces}invalid format')
-                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree, None, None, 0,
+                self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
+                               None, None, 0,
                                f'{query_info} got invalid format')
                 self.draw.push_print(f'{tree_name}.{query_info} finished')
                 self.draw.push(self, TreeType.QueryTree, Bit2d.draw_query_tree,
                                None, None, 0, f'{query_info} finished')
             return 0
-        return self.query_virtual(row, col, query_info, tree_name, result_name, spaces_from_query)
+        return self.query_virtual(row, col, query_info, tree_name,
+                                  result_name, spaces_from_query)
 
-
-# Note: We suppose any argument given into any method / function lsb is the whole number.
-# In addition, it also holds the conditions stated in documentation.
 
 if __name__ == '__main__':
     tst = BitRuPq2d(10)
-    tst.updater(1,2,3,4,5)
-    print(tst.queryp(1,2))
-    # tst.print_array()
+    tst.updater(1, 2, 3, 4, 5)
+    print(tst.queryp(1, 2))

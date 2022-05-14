@@ -6,11 +6,12 @@ from print_support import *
 from typing import Tuple
 from copy import copy
 from bit_ru_pq_1d_decor import BitRuPq
-#from pdb import set_trace
+
 
 class BitRuRq:
     """
-    Class representing 1D Binary indexed tree for set of operations Range update and Range query.
+    Class representing 1D Binary indexed tree for set of operations
+        Range update and Range query.
 
     Attributes:
         bitc:           tree for counting of linear term
@@ -18,7 +19,7 @@ class BitRuRq:
         size:           size of the trees
     """
         
-    def __init__(self, size: int = 0, do_animate = True):
+    def __init__(self, size: int = 0, do_animate=True):
         """
         Constructor creates 2 BITs for Range update Point query operations.
 
@@ -42,42 +43,59 @@ class BitRuRq:
             left <= right <= size
 
         Args:
-            left:   index representing left boundary of the interval to be updated
-            right:  index representing right boundary of the interval to be updated
+            left:   index representing left boundary
+                        of the interval to be updated
+            right:  index representing right boundary
+                        of the interval to be updated
             val:    value which is added to every element in the given interval
 
         Returns:    nothing is returned, but the tree is changed appropriately
         """
-        #####
         update_info = f'update({left},{right},{val})'
         text_from_update = f' of {update_info}'
         spaces = 4 * ' '
 
         if self.animate:
             self.bitc.draw.push_print(f'{update_info} starting')
-            self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} starting')
-            self.biti.draw.push(self.biti, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} starting')
+            self.bitc.draw.push(self.bitc, TreeType.UpdateTree,
+                                BitRuPq.draw_update_tree,
+                                f'{update_info} starting')
+            self.biti.draw.push(self.biti, TreeType.UpdateTree,
+                                BitRuPq.draw_update_tree,
+                                f'{update_info} starting')
 
-        if type(left) is not int or type(right) is not int or type(val) is not int:
+        if type(left) is not int or type(right) is not int or \
+                type(val) is not int:
             if self.animate:
                 self.bitc.draw.push_print(f'{spaces}invalid format')
-                self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree,
+                self.bitc.draw.push(self.bitc, TreeType.UpdateTree,
+                                    BitRuPq.draw_update_tree,
                                     f'{update_info} got invalid format')
         elif 1 <= left <= right <= self.size:
             spaces = 4 * ' '
-            self.bitc.updater(left, right, val, text_from_update, 'bitc', spaces)
-            self.biti.updater(left, right, -val * (left - 1), text_from_update, 'biti', spaces)
-            self.biti.updater(right + 1, self.size, val * (right - left + 1), text_from_update, 'biti', spaces)
+            self.bitc.updater(left, right, val,
+                              text_from_update, 'bitc', spaces)
+            self.biti.updater(left, right, -val * (left - 1),
+                              text_from_update, 'biti', spaces)
+            self.biti.updater(right + 1, self.size, val * (right - left + 1),
+                              text_from_update, 'biti', spaces)
         elif self.animate:
-            self.bitc.draw.push_print(f'{spaces}invalid interval, updating nothing')
-            self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} got invalid interval')
+            self.bitc.draw.push_print(f'{spaces}invalid interval, '
+                                      f'updating nothing')
+            self.bitc.draw.push(self.bitc, TreeType.UpdateTree,
+                                BitRuPq.draw_update_tree,
+                                f'{update_info} got invalid interval')
 
         if self.animate:
             self.bitc.draw.push_print(f'{update_info} finished')
-            self.bitc.draw.push(self.bitc, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} finished')
-            self.biti.draw.push(self.biti, TreeType.UpdateTree, BitRuPq.draw_update_tree, f'{update_info} finished')
+            self.bitc.draw.push(self.bitc, TreeType.UpdateTree,
+                                BitRuPq.draw_update_tree,
+                                f'{update_info} finished')
+            self.biti.draw.push(self.biti, TreeType.UpdateTree,
+                                BitRuPq.draw_update_tree,
+                                f'{update_info} finished')
 
-    def init(self, values: list, animate = True):
+    def init(self, values: list, animate=True):
         """
         Initialize whole BIT with array of integers
 
@@ -92,7 +110,8 @@ class BitRuRq:
 
     def clone(self):
         """
-        Copy a separate instance of itself, to keep the object state except for canvas
+        Copy a separate instance of itself, to keep
+            the object state except for canvas
 
         Returns:    copy of self
         """
@@ -122,17 +141,20 @@ class BitRuRq:
 
         if self.animate:
             self.bitc.draw.push_print(f'{query_info} starting')
-            self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+            self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                BitRuPq.draw_query_tree,
                                 f'{query_info} starting')
 
         if type(idx) is not int:
             if self.animate:
                 self.bitc.draw.push_print(f'{spaces}invalid format')
-                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                    BitRuPq.draw_query_tree,
                                     f'{query_info} got invalid format')
                 self.bitc.draw.push_print(f'{spaces}{query_info} = 0')
                 self.bitc.draw.push_print(f'{query_info} finished')
-                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                    BitRuPq.draw_query_tree,
                                     f'{query_info} finished, result = 0')
                 return 0
         elif 1 <= idx <= self.size:
@@ -143,41 +165,51 @@ class BitRuRq:
             self.bitc.draw.push_print(f'{spaces}out of range, querying nothing')
             self.bitc.draw.push_print(f'{spaces}{query_info} = 0')
             self.bitc.draw.push_print(f'{query_info} finished')
-            self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+            self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                BitRuPq.draw_query_tree,
                                 f'{query_info} out of range')
-            self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
+            self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                BitRuPq.draw_query_tree,
                                 f'{query_info} finished, result = 0')
             return 0
 
         if self.animate:
-            # if self.animate and not 1 <= idx <= self.size, we are returning 0, so we never get here
             if b >= 0:
-                self.bitc.draw.push_print(f'{spaces}{query_info} = a * {idx} + b = {a} * {idx} + {b} = {cumul_freq}')
+                self.bitc.draw.push_print(f'{spaces}{query_info} = a * {idx} + '
+                                          f'b = {a} * {idx} + {b} = '
+                                          f'{cumul_freq}')
             else:
-                self.bitc.draw.push_print(f'{spaces}{query_info} = a * {idx} + b = {a} * {idx} + ({b}) = {cumul_freq}')
+                self.bitc.draw.push_print(f'{spaces}{query_info} = a * {idx} '
+                                          f'+ b = {a} * {idx} + ({b}) = '
+                                          f'{cumul_freq}')
             self.bitc.draw.push_print(f'{query_info} finished')
             if b >= 0:
-                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
-                                    f'{query_info} finished, result = {a}*{idx} + {b} = {cumul_freq}')
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                    BitRuPq.draw_query_tree,
+                                    f'{query_info} finished, result = '
+                                    f'{a}*{idx} + {b} = {cumul_freq}')
             else:
-                self.bitc.draw.push(self.bitc, TreeType.QueryTree, BitRuPq.draw_query_tree,
-                                    f'{query_info} finished, result = {a}*{idx} + ({b}) = {cumul_freq}')
+                self.bitc.draw.push(self.bitc, TreeType.QueryTree,
+                                    BitRuPq.draw_query_tree,
+                                    f'{query_info} finished, result = '
+                                    f'{a}*{idx} + ({b}) = {cumul_freq}')
         return cumul_freq
-
 
     def print_structure(self):
         """
-        Helper method for user to see the content of two internal trees: bitc and biti.
+        Helper method for user to see the content
+            of two internal trees: bitc and biti.
 
-        Returns:    nothing is returned, mentioned tree content with corresponding names is printed into console
+        Returns:    nothing is returned, mentioned tree content
+            with corresponding names is printed into console
         """
         self.bitc.print_tree()
         self.biti.print_tree()
 
-
-    def get_single_freq(self, idx: int) -> Tuple[int,int]:
+    def get_single_freq(self, idx: int) -> Tuple[int, int]:
         """
-        Operation of finding the values of single frequencies from subordinate BITs.
+        Operation of finding the values
+            of single frequencies from subordinate BITs.
 
         Defined when arguments hold the following conditions:
             1 <= idx <= size
@@ -185,9 +217,10 @@ class BitRuRq:
         Args:
             idx:    index determining which element should be returned
 
-        Returns:    true frequencies from subordinated BITs at the given index, bitc first, biti second
+        Returns:    true frequencies from subordinated BITs
+                        at the given index, bitc first, biti second
         """
-        return self.bitc.get_single_freq(idx),self.biti.get_single_freq(idx)
+        return self.bitc.get_single_freq(idx), self.biti.get_single_freq(idx)
 
     def get_single_freqs(self) -> list:
         """
@@ -209,14 +242,11 @@ class BitRuRq:
             self.bitc.draw_update_tree()
             self.biti.draw_update_tree()
 
-# Note: We suppose any argument given into any method / function lsb is the whole number.
-# In addition, it also holds the conditions stated in documentation.
-
 
 def demo():
     print("Queuing demo")  
 
-    t = BitRuRq().init([1,2,3,2,3])
+    t = BitRuRq().init([1, 2, 3, 2, 3])
     t.update(1, 3, 2)
     t.update(2, 2, -3)
     t.get_single_freqs()
@@ -227,6 +257,7 @@ def demo():
     t.draw_tree(TreeType.QueryTree)
     t.draw_tree(TreeType.QueryTree)
     print("Demo queued")  
+
 
 if __name__ == '__main__':
     demo()
